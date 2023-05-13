@@ -1,0 +1,248 @@
+import datetime
+
+import speech_recognition as sr
+import pyttsx3
+import sys
+import random
+import os, webbrowser,  requests, subprocess
+from datetime import time
+from myapp import words
+from myapp.words import data_set
+
+
+def speaker(text):
+    eng = pyttsx3.init()
+    eng.say(text)
+    eng.runAndWait()
+
+
+speaker('Слушаю')
+
+
+def command():
+    r = sr.Recognizer()
+
+    with sr.Microphone(device_index=1) as source:
+        audio = r.listen(source)
+    try:
+        task = r.recognize_google(audio, language='ru-RU').lower()
+        print(f'[log] Уловил: {task}')
+    except:
+        speaker('Я вас не расслышал, повторите')
+        task = command()
+    return task
+
+
+def browser():
+    webbrowser.open('https://cop.admhmao.ru/elk', new=1)
+
+
+def films():
+    webbrowser.open('https://okko.tv/', new=1)
+
+
+def blender():
+    try:
+        subprocess.Popen('"C:\\Users\\HP\\Desktop\\New Folder\\untitled.blend15.blend"')
+    except:
+        speaker('Путь к файлу не найден, проверьте, правильный ли он')
+
+
+def game():
+    webbrowser.open('https://vseigru.net/', new=1)
+
+def offpc():
+    os.system('shutdown \s')
+
+
+def weather():
+    '''Для работы этого кода нужно зарегистрироваться на сайте
+    https://openweathermap.org или переделать на ваше усмотрение под что-то другое'''
+    try:
+        params = {'q': 'London', 'units': 'metric', 'lang': 'ru', 'appid': 'ключ к API'}
+        response = requests.get(f'https://api.openweathermap.org/data/2.5/weather', params=params)
+        if not response:
+            raise
+        w = response.json()
+        speaker(f"На улице {w['weather'][0]['description']} {round(w['main']['temp'])} градусов")
+
+    except:
+        speaker('Произошла ошибка при попытке запроса к ресурсу API, проверь код')
+
+
+def rand():
+    ok = random.randint(0, 1000)
+    speaker(ok)
+
+
+def times():
+    a = datetime.date.today()
+    speaker(f'Сейчас {a}')
+
+
+def offBot():
+    sys.exit()
+
+
+def word():
+    try:
+        subprocess.Popen('C:\\Users\\HP\Desktop')
+    except:
+        speaker('Путь к файлу не найден, проверьте, правильный ли он')
+
+
+def pycharm():
+    webbrowser.open('https://learn.algoritmika.org/main', new=1)
+
+
+def working(task):
+    if 'какая погода' in task:
+        speaker('сейчас скажу')
+        weather()
+    if 'какая погода на улице' in task:
+        speaker('сейчас гляну...')
+        weather()
+    if 'что там на улице' in task:
+        speaker('боишься замерзнуть?')
+        weather()
+    if 'сколько градусов' in task:
+        speaker('можешь выглянуть в окно, но сейчас проверю')
+        weather()
+    if 'запусти браузер' in task:
+        speaker('запускаю браузер')
+        browser()
+    if 'открой браузер' in task:
+        speaker('интернет активирован')
+        browser()
+    if 'интернет открой' in task:
+        speaker('открываю браузер')
+        browser()
+    if 'мне нужны ответы' in task:
+        speaker('сейчас открою браузер')
+        browser()
+    if 'хочу посмотреть фильм' in task:
+        speaker('запускаю')
+        films()
+    if 'открой кинотеатр' in task:
+        speaker('что на этот раз?')
+        films()
+    if 'мне скучно' in task:
+        speaker('опять бездельничаешь')
+        films()
+    if 'посмотреть фильм' in task:
+        speaker('сейчас открою')
+        films()
+    if 'какой сегодня день' in task:
+        speaker('вечно забываешься')
+        times()
+    if 'сколько время' in task:
+        speaker('что на этот раз?')
+        times()
+    if 'сколько времени сейчас'  in task:
+        speaker('вообще много')
+        times()
+    if 'дата' in task:
+        speaker('недетское однако')
+        times()
+    if 'время'  in task:
+        speaker('сейчас')
+        times()
+    if 'время суток' in task:
+        speaker('с каких уток? ладно')
+        times()
+    if 'я из будущего, какой год сейчас'  in task:
+        speaker('опять бездельничаешь')
+        times()
+    if 'я опаздываю' in task:
+        speaker('это тебе не поможет')
+        times()
+    if 'пора работать' in task:
+        speaker('наконец делом занялась')
+        pycharm()
+    if 'хочу сделать новую игру' in task:
+        speaker('а нам лишь бы баловаться')
+        pycharm()
+    if 'запусти pycharm' in task:
+        speaker('другое дело')
+        pycharm()
+    if 'запусти редактор' in task:
+        speaker('здорово, запускаю')
+        pycharm()
+    if 'играть' in task:
+        speaker('лишь бы баловаться')
+        game()
+    if 'хочу поиграть в игру' in task:
+        speaker('а нам лишь бы баловаться')
+        game()
+    if 'запусти игру' in task:
+        speaker('запускаю игру, а нам лишь бы баловаться')
+        game()
+    if 'хочу творить прекрасное' in task:
+        speaker('если конечно сможешь')
+        blender()
+    if 'запусти blender' in task:
+        speaker('лишь бы баловаться')
+        blender()
+    if 'давай 3д модель сделаем' in task:
+        speaker('хорошая идея')
+        blender()
+    if 'пора начинать новый проект' in task:
+        speaker('новый этап в жизни, запускаю')
+        blender()
+    if 'творческий порыв' in task or 'время для 3д моделирования' in task:
+        speaker('запускаю программу')
+        blender()
+    if 'у меня вдохновение' in task:
+        speaker('или опять в депрессии')
+        word()
+    if 'мне очень грустно' in task:
+        speaker('я знаю, что делать')
+        word()
+    if 'открой word' in task or 'давай напишем про себя рассказ' in task:
+        speaker('хорошая идея')
+        word()
+    if 'пора писать о грустном' in task:
+        speaker('ты по-другому не умеешь')
+        word()
+    if 'поэт должен развиваться' in task:
+        speaker('новый этап в жизни, запускаю')
+        word()
+    if 'люблю грозу в начале мая' in task:
+        speaker('все с тобой ясно')
+        word()
+    if 'хочу писать, сердце требует' in task:
+        speaker('лишь бы баловаться')
+        word()
+    if 'люди требуют проды' in task:
+        speaker(' если конечно сможешь')
+        word()
+    if 'выключи компьютер' in task or 'выключи комп' in task:
+        speaker('отключаю компьютер')
+        offpc()
+    if 'отключись' in task or 'пока' in task:
+        speaker('пока')
+        offBot()
+    if 'до встречи' in task:
+        speaker('буду скучать')
+        offBot()
+    if 'как у тебя дела' in task:
+        speaker('работаю в фоне, не переживай')
+    if 'ты тут' in task:
+        speaker('вроде да')
+    if 'что ты умеешь' in task:
+        speaker('я умею узнавать погоду, могу открыть браузер, запустить exe файл, выключить пк, отключиться, рассказать анекдот и еще тому чему ты меня научишь')
+    if 'справка' in task:
+        speaker('я умею узнавать погоду, могу открыть браузер, запустить exe файл, выключить пк, отключиться, рассказать анекдот и еще тому чему ты меня научишь')
+    if 'что делаешь' in task:
+        speaker('жду очередной команды, хоть мог бы и сам на кнопку нажать')
+    if 'привет' in task:
+        speaker('и тебе привет')
+    if 'приветствую' in task:
+        speaker('здравствуйте, сударыня')
+    if 'работаешь' in task:
+        speaker('как видишь')
+    if 'назови любое число' in task:
+        rand()
+
+while True:
+    working(command())
