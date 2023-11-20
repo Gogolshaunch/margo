@@ -1,7 +1,11 @@
 import os
-import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QPushButton
+import threading
+
+
+def my_long_running_function():
+    os.system(f'python main.py')
 
 
 class Ui_MainWindow(object):
@@ -15,9 +19,6 @@ class Ui_MainWindow(object):
         self.micro.setText("")
         self.micro.setPixmap(QtGui.QPixmap("../../Desktop/mir.png"))
         self.micro.setObjectName("micro")
-        self.pushButton = QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(220, 470, 260, 40))
-        self.pushButton.clicked.connect(self.execute_python_file)
         self.voice = QtWidgets.QLabel(self.centralwidget)
         self.voice.setGeometry(QtCore.QRect(115, 275, 470, 240))
         self.voice.setText("")
@@ -31,10 +32,14 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "🎧"))
+        pushButton = QPushButton(self.centralwidget)
+        pushButton.setGeometry(QtCore.QRect(220, 470, 260, 40))
+        pushButton.setText(_translate("MainWindow", "🎧"))
+        pushButton.clicked.connect(self.execute_python_file)
 
     def execute_python_file(self):
-        os.system(f'python main.py')
+        thread = threading.Thread(target=my_long_running_function)
+        thread.start()
 
 
 if __name__ == "__main__":
