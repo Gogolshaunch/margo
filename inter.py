@@ -1,12 +1,10 @@
-import os
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QPushButton
-import subprocess
-from num2words import num2words
-ok = True
+import configuration
+from assistant import Assistant
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(700, 550)
@@ -16,7 +14,7 @@ class Ui_MainWindow(object):
         self.micro.setGeometry(QtCore.QRect(225, 40, 300, 300))
         self.micro.setText("")
         self.micro.setPixmap(QtGui.QPixmap("../../Desktop/mir.png"))
-        self.micro.setObjectName("micro")
+        self.micro.setObjectName("micro.py")
         self.voice = QtWidgets.QLabel(self.centralwidget)
         self.voice.setGeometry(QtCore.QRect(115, 275, 470, 240))
         self.voice.setText("")
@@ -31,31 +29,23 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         pushButton = QPushButton(self.centralwidget)
-        pushButton.setGeometry(QtCore.QRect(190, 470, 130, 40))
+        pushButton.setGeometry(QtCore.QRect(220, 470, 260, 40))
         pushButton.setText(_translate("MainWindow", "🎧"))
-        pushButton.clicked.connect(self.start_loop)
+        pushButton.clicked.connect(assistant.run)
 
-        pushButton1 = QPushButton(self.centralwidget)
-        pushButton1.setGeometry(QtCore.QRect(360, 470, 130, 40))
-        pushButton1.setText(_translate("MainWindow", "▶"))
-        pushButton1.clicked.connect(self.stop_loop)
-
-    def start_loop(self):
-        global ok
-        os.system(f'C:\\Users\\HP\\Desktop\\dist\\main\\main.exe')
-        ok = False
-
-    def stop_loop(self):
-        global ok
-        ok = True
+        makeButton = QPushButton(self.centralwidget)
+        makeButton.setGeometry(QtCore.QRect(220, 470, 260, 40))
+        makeButton.setText(_translate("MainWindow", "+"))
+        makeButton.clicked.connect(assistant.make_com)
 
 
 if __name__ == "__main__":
     import sys
 
+    assistant = Assistant(configuration.commands)
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
 
+    MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
 
