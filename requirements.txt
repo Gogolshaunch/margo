@@ -1,0 +1,10 @@
+requests~=2.31.0
+num2words~=0.5.13
+fuzzywuzzy~=0.18.0
+django-googlesearch~=0.2
+vosk~=0.3.45
+sounddevice~=0.4.6
+g4f~=0.1.9.1
+PyQt5~=5.15.10
+pytube~=15.0.0
+torch~=2.1.1
