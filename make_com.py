@@ -1,7 +1,10 @@
+import json
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QPushButton
-
 import assistant
+with open('data_file.json', "r") as file:
+    configuration = json.load(file)
 
 
 class Ui_MainWindow(object):
@@ -56,7 +59,7 @@ class Ui_MainWindow(object):
         comboBox.addItem("")
         comboBox.addItem("")
 
-        comboBox.setCurrentText(_translate("MainWindow", "открытие файла"))
+        comboBox.setCurrentText(_translate("MainWindow", ""))
         comboBox.setItemText(0, _translate("MainWindow", "открытие файла"))
         comboBox.setItemText(1, _translate("MainWindow", "ответ на вопрос"))
         comboBox.setItemText(2, _translate("MainWindow", "открытие сайта"))
@@ -64,10 +67,10 @@ class Ui_MainWindow(object):
         self.lineEdit.setText(_translate("MainWindow", ""))
         self.lineEdit_2.setText(_translate("MainWindow", ""))
         self.lineEdit_3.setText(_translate("MainWindow", ""))
+
         self.pushButton = QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(330, 260, 260, 40))
         self.pushButton.setText(_translate("MainWindow", "Дальше"))
-        self.pushButton.setEnabled(False)
 
     def takeinputs(self, val):
         self.lineEdit.setText('Введите название функции')
@@ -78,13 +81,13 @@ class Ui_MainWindow(object):
             self.lineEdit_3.setText('Введите ссылку сайта')
         elif val == 'ответ на вопрос':
             self.lineEdit_3.setText('Введите список ответов для данной функции через запятую')
-        if self.lineEdit.text != '' and self.lineEdit_2.text != '' and self.lineEdit_3.text != '' and self.lineEdit.text != 'Введите название функции' and self.lineEdit_2.text != 'Введите фразы вызова функции через запятую' and self.lineEdit_3.text != 'Введите ссылку сайта' and self.lineEdit_3.text != 'Введите полный путь до файла' and self.lineEdit_3.text != 'Введите список ответов для данной функции через запятую':
-            self.pushButton.setEnabled(True)
-            self.pushButton.clicked.connect(assistant.assistant.make_com(self.lineEdit.text, self.lineEdit_2.text, self.lineEdit_3.text, val))
+        self.pushButton.clicked.connect(assistant.make_com(self.lineEdit.text, self.lineEdit_2.text, self.lineEdit_3.text, val))
 
 
 if __name__ == "__main__":
     import sys
+
+    assistant = assistant.Assistant(configuration)
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
