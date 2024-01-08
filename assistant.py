@@ -8,7 +8,6 @@ import string
 from num2words import num2words
 from fuzzywuzzy import fuzz
 import time
-import g4f
 import webbrowser
 import os
 from googlesearch import search
@@ -19,6 +18,7 @@ import win32api
 import win32gui
 import ctypes
 import json
+from gigachat import GigaChat
 import screen_brightness_control as sbc
 startTime = 0
 
@@ -49,10 +49,11 @@ def setEngLayout():
 
 
 def chat_margo(note):
-    response = g4f.ChatCompletion.create(
-        model=g4f.models.gpt_4,
-        messages=[{"role": "user", "content": note}])
-    return response
+    with GigaChat(
+            credentials='OGViMjExZWItOWJlZS00N2ZjLWI4ZDUtM2MyZTlkN2UwZjI0OjA3NjM3MzNjLTk2M2UtNGFlZS1iZTNkLTBhMjllZGZlNjZkNw==',
+            verify_ssl_certs=False) as giga:
+        response = giga.chat(note)
+        return response.choices[0].message.content
 
 
 def com(name_def):
