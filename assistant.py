@@ -39,13 +39,13 @@ def get_layout():
 def setCyrillicLayout():
     window_handle = win32gui.GetForegroundWindow()
     result = win32api.SendMessage(window_handle, 0x0050, 0, 0x04190419)
-    return(result)
+    return result
 
 
 def setEngLayout():
     window_handle = win32gui.GetForegroundWindow()
     result = win32api.SendMessage(window_handle, 0x0050, 0, 0x04090409)
-    return(result)
+    return result
 
 
 def chat_margo(note):
@@ -110,7 +110,7 @@ class Assistant:
         return cmd
 
     def recognize_cmd(self, cmd: str):
-        rc = {'cmd': '', 'percent': 75}
+        rc = {'cmd': '', 'percent': 65}
         for c, v in configuration.items():
 
             for x in v:
@@ -134,36 +134,15 @@ class Assistant:
     def va_respond(self, voice: str):
         if voice.startswith(name):
             cmd = self.recognize_cmd(self.filter_cmd(voice))
-
-            if cmd['cmd'] not in configuration.keys():
-                self.speak(random.choice(["я тебя не понимаю", "говори четче", "не расслышала"]))
-            else:
-                self.execute_cmd(cmd['cmd'], voice)
+            self.execute_cmd(cmd['cmd'], voice)
 
     def execute_cmd(self, cmd, voice: str):
         global startTime
-        if cmd == 'chat_gpt':
-            try:
-                self.speak(chat_margo(voice))
-            except:
-                self.speak('Я так еще не умею, извините')
-
-        elif cmd == 'offBot':
+        if cmd == 'offBot':
             t = ['отключаюсь', 'пока', 'до встречи', 'спать', "наконец-то тишина и отдых", "целую в дёсны",
                  "бывай!пока"]
             self.speak(random.choice(t))
             exit()
-
-        elif cmd == 'repit':
-            a = voice.split(' ', 4)
-            self.speak(a[-1])
-
-        elif cmd == 'brightness':
-            voice = voice.split(' ')
-            a = sbc.get_brightness()
-            self.speak("Сейчас яркость" + num2words(a, lang="ru"))
-            sbc.set_brightness(voice[-1], display=0)
-            self.speak("Яркость изменена")
 
         elif cmd == 'battery':
             battery = psutil.sensors_battery()
@@ -173,12 +152,6 @@ class Assistant:
                 self.speak("Зарядка подключена, заряд батареи: " + num2words(percent, lang="ru") + "процентов")
             else:
                 self.speak("Зарядка отключена, заряд батареи: " + num2words(percent, lang="ru") + "процентов")
-
-        elif cmd == 'joke':
-            jokes = []
-            self.speak('Шутка минутка')
-            self.speak(random.choice(jokes))
-            self.speak('Смешно?')
 
         elif cmd == 'times':
             t = ['недетское время однако', "смотрю"]
@@ -215,7 +188,7 @@ class Assistant:
             t += "повторить за вами фразу..."
             t += "записать ваши слова в текстовый файл и прочитать его..."
             t += "найти в интернете все о чем спросите..."
-            t += "решить вашу судьбу с помощью шара судьбы или подбросить монетку..."
+            t += "решить вашу судьбу, подбросив монетку..."
             t += "открыть ютуб и почту..."
             t += "открыть маркетплейс..."
             t += "открыть вайбер и в контакте..."
@@ -267,8 +240,6 @@ class Assistant:
             webbrowser.open('https://okko.tv/', new=2)
 
         elif cmd == 'data':
-            t = ['сейчас', "сейчас скажу"]
-            self.speak(random.choice(t))
             a = datetime.date.today()
             self.speak("Сейчас")
             self.speak(num2words(a.day, lang="ru"))
@@ -279,6 +250,10 @@ class Assistant:
                  "правильно", "одобряю", "давай"]
             self.speak(random.choice(t))
             webbrowser.open('https://akniga.org/', new=2)
+
+        elif cmd == 'rand':
+            a = random.randint(1, 500)
+            self.speak(num2words(a, lang="ru"))
 
         elif cmd == 'viber':
             try:
@@ -322,14 +297,9 @@ class Assistant:
 
         elif cmd == 'ball_fate':
             self.speak('задайте любой вопрос и я решу вашу судьбу')
-            time.sleep(15)
+            time.sleep(12)
             t = ['да', 'нет', 'очень вероятно', 'точно да', 'не сейчас', 'есть сомнения', 'я так не думаю',
                  'глупости какие-то', 'без сомнений да', 'наверное', "не знаю, все зависит от вас"]
-            self.speak(random.choice(t))
-
-        elif cmd == 'hello':
-            t = ['и тебе привет', 'привет', 'приветсвую', 'снова здесь', 'рада видеть', 'давно не виделись',
-                 'не скучала,но привет', 'здравствуйте', "новый рабочий день", 'привет от старых штиблет']
             self.speak(random.choice(t))
 
         elif cmd == 'reminder':
@@ -367,42 +337,6 @@ class Assistant:
             t = ['открываю', 'здорово', 'запускаю', "сейчас"]
             self.speak(random.choice(t))
             webbrowser.open('https://translate.google.ru/;', new=2)
-
-        elif cmd == 'rand':
-            a = random.randint(1, 500)
-            self.speak(num2words(a, lang="ru"))
-
-        elif cmd == 'google':
-            try:
-                a = voice.split(' ', 4)
-                query = a[-1]
-                ok = []
-                self.speak("По вашему запросу я получила десять ссылок, открываю первые три, надеюсь, что вы найдете нужное")
-                for i in search(query):
-                    ok.append(i)
-                webbrowser.open(ok[0], new=2)
-                webbrowser.open(ok[1], new=2)
-                webbrowser.open(ok[2], new=2)
-            except:
-                self.speak('Я вас не поняла')
-
-        elif cmd == 'txt':
-            a = voice.split(' ', 4)
-            with open('my_thoughts.txt', 'a') as f:
-                f.write(a[-1] + '\n')
-            self.speak("Мне нравится")
-            self.speak('Всё успешно сохранено')
-
-        elif cmd == 'read_txt':
-            with open('my_thoughts.txt', 'r') as f:
-                for line in f:
-                    try:
-                        self.speak(line)
-                    except:
-                        self.speak('Я не умею читать такие символы')
-
-        elif cmd == 'del_txt':
-            open('file.txt', 'w').close()
 
         elif cmd == 'start':
             self.speak("Секундомер запущен")
@@ -464,6 +398,17 @@ class Assistant:
             else:
                 self.speak("Секундомер не включен")
 
+        elif cmd == 'read_txt':
+            with open('my_thoughts.txt', 'r') as f:
+                for line in f:
+                    try:
+                        self.speak(line)
+                    except:
+                        self.speak('Я не умею читать такие символы')
+
+        elif cmd == 'del_txt':
+            open('file.txt', 'w').close()
+
         elif cmd == 'money':
             t = ['орел', 'решка']
             self.speak(random.choice(t))
@@ -479,13 +424,43 @@ class Assistant:
             self.speak(random.choice(t))
             webbrowser.open('https://www.livelib.ru/rec/master/6', new=2)
         else:
-            try:
-                com(configuration[cmd])
-            except:
+            if 'произнеси' in voice or 'повтори' in voice or 'скажи как я' in voice:
+                a = voice.split(' ', 4)
+                self.speak(a[-1])
+            elif 'найди в интернете' in voice or 'в интернете' in voice or 'погугли информацию о' in voice or 'скажи ты знаешь' in voice:
                 try:
-                    self.speak(chat_margo(voice))
+                    a = voice.split(' ', 4)
+                    query = a[-1]
+                    ok = []
+                    self.speak(
+                        "По вашему запросу я получила десять ссылок, открываю первые три, надеюсь, что вы найдете нужное")
+                    for i in search(query):
+                        ok.append(i)
+                    webbrowser.open(ok[0], new=2)
+                    webbrowser.open(ok[1], new=2)
+                    webbrowser.open(ok[2], new=2)
                 except:
-                    self.speak('Я так еще не умею, извините')
+                    self.speak('Я вас не поняла')
+            elif 'яркость' in voice:
+                voice = voice.split(' ')
+                a = sbc.get_brightness()
+                self.speak("Сейчас яркость" + num2words(a, lang="ru"))
+                sbc.set_brightness(voice[-1], display=0)
+                self.speak("Яркость изменена")
+            elif 'запиши мои мысли' in voice or 'запиши в файл' in voice or 'в текстовый файл' in voice:
+                a = voice.split(' ', 4)
+                with open('my_thoughts.txt', 'a') as f:
+                    f.write(a[-1] + '\n')
+                self.speak("Мне нравится")
+                self.speak('Всё успешно сохранено')
+            else:
+                try:
+                    com(configuration[cmd])
+                except:
+                    try:
+                        self.speak(chat_margo(voice))
+                    except:
+                        self.speak('Я так еще не умею, извините')
 
     def __make_commands(self, _commands: dict[str: tuple]):
         self.commands = {}
@@ -508,6 +483,15 @@ class Assistant:
             self.speak('Не удалось добавить функцию, видимо какие-то данные введены неверно')
 
     def run(self):
+        now = datetime.datetime.now()
+        if 6 <= now.hour < 12:
+            self.speak("Доброе утро!")
+        elif 12 <= now.hour < 17:
+            self.speak("Добрый день!")
+        elif 17 <= now.hour < 22:
+            self.speak("Добрый вечер!")
+        else:
+            self.speak("Доброй ночи!")
         self.listen(self.va_respond)
 
 
