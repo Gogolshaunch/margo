@@ -1,5 +1,4 @@
 import json
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QPushButton
 import assistant
