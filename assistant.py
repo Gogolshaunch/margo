@@ -2,6 +2,7 @@ import vosk
 import sys
 import sounddevice as sd
 import queue
+from ru_word2number import w2n
 import psutil
 import random
 import string
@@ -20,6 +21,10 @@ import ctypes
 import json
 from gigachat import GigaChat
 import screen_brightness_control as sbc
+from ctypes import cast, POINTER
+from comtypes import CLSCTX_ALL
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+
 startTime = 0
 
 name = ('рита', 'марго', 'маргарита', 'риточка', 'маргош', 'маруся', 'рит')
@@ -38,14 +43,14 @@ def get_layout():
 
 def setCyrillicLayout():
     window_handle = win32gui.GetForegroundWindow()
-    result = win32api.SendMessage(window_handle, 0x0050, 0, 0x04190419)
-    return result
+    result = win32api.SendMessage(window_handle, 0x0050, 0, 0x4190419)
+    return (result)
 
 
 def setEngLayout():
     window_handle = win32gui.GetForegroundWindow()
     result = win32api.SendMessage(window_handle, 0x0050, 0, 0x04090409)
-    return result
+    return (result)
 
 
 def chat_margo(note):
@@ -60,15 +65,14 @@ def com(name_def):
     if name_def in configuration.keys():
         if configuration[name_def][-1] == 'открытие файла':
             try:
-                t = ["открываю", "интересненько", 'сейчас', 'да, сер']
+                t = ["открываю", "интересненько", 'сейчас']
                 assistant.speak(random.choice(t))
                 os.startfile(f'{configuration[name_def][-2]}')
             except:
                 assistant.speak('Возникли некоторые трудности, я не могу найти файл')
         elif configuration[name_def][-1] == 'открытие сайта':
             try:
-                t = ['запускаю браузер', 'интернет активирован', 'открываю браузер', 'сейчас открою браузер', "минуточку",
-                     "пожалуйста"]
+                t = ['запускаю', 'открываю', 'сейчас открою']
                 assistant.speak(random.choice(t))
                 webbrowser.open_new(f'{configuration[name_def][-2]}')
             except:
@@ -95,8 +99,8 @@ def q_callback(indata, frames, tim, status):
 
 
 class Assistant:
-    def __init__(self, commands: dict[str: tuple]):
-        self.__make_commands(commands)
+    def __init__(self):
+        pass
 
     def speak(self, message: str):
         va_voice.speak(message)
@@ -166,10 +170,10 @@ class Assistant:
             webbrowser.open_new('https://yandex.ru/')
 
         elif cmd == 'key_layout':
+            if get_layout() == 'ru':
+                setEngLayout()
             if get_layout() == 'en':
                 setCyrillicLayout()
-            elif get_layout() == 'ru':
-                setEngLayout()
             self.speak('Готово')
 
         elif cmd == 'help':
@@ -182,7 +186,6 @@ class Assistant:
             t += "включать онлайн игры и аудиокниги..."
             t += "говорить о погоде..."
             t += "называть рандомные числа..."
-            t += "отключиться..."
             t += "открыть ворд или калькулятор..."
             t += "записать ваши планы и дела..."
             t += "повторить за вами фразу..."
@@ -269,6 +272,16 @@ class Assistant:
             self.speak(random.choice(t))
             webbrowser.open('https://www.wildberries.ru/', new=2)
 
+        elif cmd == 'algo':
+            t = ['открываю', 'согласна', "одобряю", "давай"]
+            self.speak(random.choice(t))
+            webbrowser.open('https://learn.algoritmika.org/main', new=2)
+
+        elif cmd == 'des':
+            t = ['открываю', 'согласна', "одобряю", "давай"]
+            self.speak(random.choice(t))
+            webbrowser.open('https://desygner.com/ru/', new=2)
+
         elif cmd == 'youtube':
             t = ['открываю', 'согласна', 'запускаю',
                  "сейчас", "одобряю", "не одобряю", 'интересно', 'здорово']
@@ -276,7 +289,8 @@ class Assistant:
             webbrowser.open('https://www.youtube.com/', new=2)
 
         elif cmd == 'you':
-            t = ['Привет! Меня зовут Маргарита. Я умная и полезная, всегда готова поддержать разговор на любую тему. Я стремлюсь всегда узнавать что-то новое и развиваться. Я умею слушать, если вам нужна помощь или просто хочется поговорить, Марго всегда готова помочь.',
+            t = [
+                'Привет! Меня зовут Маргарита. Я умная и полезная, всегда готова поддержать разговор на любую тему. Я стремлюсь всегда узнавать что-то новое и развиваться. Я умею слушать, если вам нужна помощь или просто хочется поговорить, Марго всегда готова помочь.',
                 'хочешь познакомиться поближе. что ж, я маргарита. Я люблю помогать людям. Я общительная и умею находить общий язык с разными людьми. Однако, иногда могу быть резкой в своих высказываниях.',
                 "скажу так: мы маргариты смелые и гордые. хочу вдохновлять и вдохновляться. ценю приятные мелочи. если кратко: не страдаю от стыда или совести — в моем характере нет ничего лишнего. если тебя это не отпугивает, то мы подружимся",
                 "имя Маргарита греческого происхождения. смысл имени в переводе - «жемчужина, жемчуг». маргариты умные и сообразительные. по характеру сильная. люблю свободу и независимость"]
@@ -326,6 +340,78 @@ class Assistant:
                 t = ['открываю', 'здорово', 'запускаю', "сейчас"]
                 self.speak(random.choice(t))
                 os.startfile("C://Users//HP//Desktop//Word 2016.lnk")
+            except:
+                self.speak('Возникли некоторые трудности, я не могу найти файл')
+
+        elif cmd == 'power':
+            try:
+                t = ['открываю', 'здорово', 'запускаю', "сейчас"]
+                self.speak(random.choice(t))
+                os.startfile("C://Users//HP//Desktop//PowerPoint 2016.lnk")
+            except:
+                self.speak('Возникли некоторые трудности, я не могу найти файл')
+
+        elif cmd == 'paint':
+            try:
+                t = ['открываю', 'здорово', 'запускаю', "сейчас"]
+                self.speak(random.choice(t))
+                os.startfile("C://Users//HP//Desktop//Paint 3D.lnk")
+            except:
+                self.speak('Возникли некоторые трудности, я не могу найти файл')
+
+        elif cmd == 'gimp':
+            try:
+                t = ['открываю', 'здорово', 'запускаю', "сейчас"]
+                self.speak(random.choice(t))
+                os.startfile("C://Users//HP//Desktop//GIMP 2.lnk")
+            except:
+                self.speak('Возникли некоторые трудности, я не могу найти файл')
+
+        elif cmd == 'blend':
+            try:
+                t = ['открываю', 'здорово', 'запускаю', "сейчас"]
+                self.speak(random.choice(t))
+                os.startfile("C://Users//HP//Desktop//Blender.lnk")
+            except:
+                self.speak('Возникли некоторые трудности, я не могу найти файл')
+
+        elif cmd == 'ink':
+            try:
+                t = ['открываю', 'здорово', 'запускаю', "сейчас"]
+                self.speak(random.choice(t))
+                os.startfile("C://Users//HP//Desktop//Inkscape.lnk")
+            except:
+                self.speak('Возникли некоторые трудности, я не могу найти файл')
+
+        elif cmd == 'vscode':
+            try:
+                t = ['открываю', 'здорово', 'запускаю', "сейчас"]
+                self.speak(random.choice(t))
+                os.startfile("C://Users//HP//Desktop//VSCode.lnk")
+            except:
+                self.speak('Возникли некоторые трудности, я не могу найти файл')
+
+        elif cmd == 'qt':
+            try:
+                t = ['открываю', 'здорово', 'запускаю', "сейчас"]
+                self.speak(random.choice(t))
+                os.startfile("C://Users//HP//Desktop//Qt Designer.lnk")
+            except:
+                self.speak('Возникли некоторые трудности, я не могу найти файл')
+
+        elif cmd == 'pycharm':
+            try:
+                t = ['открываю', 'здорово', 'запускаю', "сейчас"]
+                self.speak(random.choice(t))
+                os.startfile("C://Users//HP//Desktop//PyCharm Community Edition 2022.2.2.lnk")
+            except:
+                self.speak('Возникли некоторые трудности, я не могу найти файл')
+
+        elif cmd == 'draw':
+            try:
+                t = ['открываю', 'здорово', 'запускаю', "сейчас"]
+                self.speak(random.choice(t))
+                os.startfile("C://Users//HP//Desktop//draw.io.lnk")
             except:
                 self.speak('Возникли некоторые трудности, я не могу найти файл')
 
@@ -407,7 +493,8 @@ class Assistant:
                         self.speak('Я не умею читать такие символы')
 
         elif cmd == 'del_txt':
-            open('file.txt', 'w').close()
+            open('my_thoughts.txt', 'w').close()
+            self.speak('Все удалено')
 
         elif cmd == 'money':
             t = ['орел', 'решка']
@@ -428,25 +515,58 @@ class Assistant:
                 a = voice.split(' ', 4)
                 self.speak(a[-1])
             elif 'найди в интернете' in voice or 'в интернете' in voice or 'погугли информацию о' in voice or 'скажи ты знаешь' in voice:
-                try:
-                    a = voice.split(' ', 4)
-                    query = a[-1]
-                    ok = []
-                    self.speak(
-                        "По вашему запросу я получила десять ссылок, открываю первые три, надеюсь, что вы найдете нужное")
-                    for i in search(query):
-                        ok.append(i)
-                    webbrowser.open(ok[0], new=2)
-                    webbrowser.open(ok[1], new=2)
-                    webbrowser.open(ok[2], new=2)
-                except:
-                    self.speak('Я вас не поняла')
+                a = voice.split(' ', 4)
+                query = a[-1]
+                ok = []
+                for i in search(query):
+                    ok.append(i)
+                self.speak("Открываю первые две ссылки по вашему запросу, надеюсь, что вы найдете нужное")
+                webbrowser.open(ok[0], new=2)
+                webbrowser.open(ok[1], new=2)
             elif 'яркость' in voice:
                 voice = voice.split(' ')
-                a = sbc.get_brightness()
-                self.speak("Сейчас яркость" + num2words(a, lang="ru"))
-                sbc.set_brightness(voice[-1], display=0)
-                self.speak("Яркость изменена")
+                try:
+                    voice1 = w2n.word_to_num(voice[-1])
+                    a = sbc.get_brightness()
+                    for i in a:
+                        self.speak(f"Сейчас яркость {i}")
+                    sbc.set_brightness(voice1, display=0)
+                    self.speak("Яркость изменена")
+                except:
+                    pass
+            elif 'убавь' in voice:
+                devices = AudioUtilities.GetSpeakers()
+                interface = devices.Activate(
+                    IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+                volume = cast(interface, POINTER(IAudioEndpointVolume))
+                volume.SetMasterVolumeLevelScalar(volume.GetMasterVolumeLevelScalar() - 0.1, None)
+
+            elif 'прибавь' in voice:
+                devices = AudioUtilities.GetSpeakers()
+                interface = devices.Activate(
+                    IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+                volume = cast(interface, POINTER(IAudioEndpointVolume))
+                volume.SetMasterVolumeLevelScalar(volume.GetMasterVolumeLevelScalar() + 0.1, None)
+
+            elif 'громкость' in voice or 'звук' in voice:
+                voice = voice.split(' ', 2)
+                try:
+                    a = w2n.word_to_num(voice[-1])/100
+                    devices = AudioUtilities.GetSpeakers()
+                    interface = devices.Activate(
+                        IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+                    volume = cast(interface, POINTER(IAudioEndpointVolume))
+                    volume.SetMasterVolumeLevelScalar(a, None)
+                except:
+                    self.speak('Скажи просто громкость на и нужно вам число')
+
+            elif 'звук на ноль' in voice or 'громкость на ноль' in voice or 'до нуля' in voice or 'выключи звук' in voice:
+                devices = AudioUtilities.GetSpeakers()
+                interface = devices.Activate(
+                    IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+                volume = cast(interface, POINTER(IAudioEndpointVolume))
+                volume.SetMasterVolumeLevelScalar(0, None)
+
             elif 'запиши мои мысли' in voice or 'запиши в файл' in voice or 'в текстовый файл' in voice:
                 a = voice.split(' ', 4)
                 with open('my_thoughts.txt', 'a') as f:
@@ -455,19 +575,12 @@ class Assistant:
                 self.speak('Всё успешно сохранено')
             else:
                 try:
-                    com(configuration[cmd])
+                    com(cmd)
                 except:
                     try:
                         self.speak(chat_margo(voice))
                     except:
                         self.speak('Я так еще не умею, извините')
-
-    def __make_commands(self, _commands: dict[str: tuple]):
-        self.commands = {}
-        for k, v_arr in _commands.items():
-            k = k.lower()
-            for v in v_arr:
-                self.commands[v.lower()] = k
 
     def make_com(self, name_def, call_def, work_def, val):
         try:
@@ -496,5 +609,5 @@ class Assistant:
 
 
 if __name__ == "__main__":
-    assistant = Assistant(configuration)
+    assistant = Assistant()
     assistant.run()
