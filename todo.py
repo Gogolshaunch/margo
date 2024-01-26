@@ -13,6 +13,7 @@ def add_task():
         task = f'●{task}'
         listbox_tasks.insert(END, task)
         entry_task.delete(0, END)
+
     else:
         tkinter.messagebox.showwarning(title="Warning!", message="Вы должны ввести задачу.")
 
