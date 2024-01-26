@@ -1,9 +1,6 @@
-import json
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QPushButton
 import assistant
-with open('data_file.json', "r") as file:
-    configuration = json.load(file)
 
 
 class Ui_MainWindow(object):
@@ -26,7 +23,6 @@ class Ui_MainWindow(object):
         font.setWeight(75)
 
         self.label.setFont(font)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
@@ -86,7 +82,7 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
 
-    assistant = assistant.Assistant(configuration)
+    assistant = assistant.Assistant()
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
