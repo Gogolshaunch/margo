@@ -1,12 +1,8 @@
-import json
 import os
 from threading import Thread
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QPushButton
 import assistant
-
-with open('data_file.json', "r") as file:
-    configuration = json.load(file)
 
 
 def increase():
@@ -56,7 +52,7 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
 
-    assistant = assistant.Assistant(configuration)
+    assistant = assistant.Assistant()
     app = QtWidgets.QApplication(sys.argv)
 
     t1 = Thread(target=increase)
