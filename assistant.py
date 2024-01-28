@@ -143,8 +143,7 @@ class Assistant:
     def execute_cmd(self, cmd, voice: str):
         global startTime
         if cmd == 'offBot':
-            t = ['отключаюсь', 'пока', 'до встречи', 'спать', "наконец-то тишина и отдых", "целую в дёсны",
-                 "бывай!пока"]
+            t = ['отключаюсь', 'пока', 'до встречи', 'спать']
             self.speak(random.choice(t))
             exit()
 
@@ -153,9 +152,9 @@ class Assistant:
             plugged = battery.power_plugged
             percent = battery.percent
             if plugged:
-                self.speak("Зарядка подключена, заряд батареи: " + num2words(percent, lang="ru") + "процентов")
+                self.speak("Зарядка подключена, заряд батареи: " + num2words(percent, lang="ru"))
             else:
-                self.speak("Зарядка отключена, заряд батареи: " + num2words(percent, lang="ru") + "процентов")
+                self.speak("Зарядка отключена, заряд батареи: " + num2words(percent, lang="ru"))
 
         elif cmd == 'times':
             t = ['недетское время однако', "смотрю"]
@@ -206,7 +205,7 @@ class Assistant:
             pass
 
         elif cmd == 'offpc':
-            t = ['пока', 'выключаю', 'до встречи', "окей", 'спать', "наконец-то тишина и отдых"]
+            t = ['пока', 'выключаю', 'до встречи', "окей", 'спать']
             self.speak(random.choice(t))
             os.system('shutdown -s')
 
